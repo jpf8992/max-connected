@@ -23,7 +23,7 @@ class Matrix(object):
             self.rows = []
         self.m = m
         self.n = n
-        print("-- New Matrix Initialised --")
+        # print("-- New Matrix Initialised --")
         
     def __getitem__(self, idx):
         return self.rows[idx]
