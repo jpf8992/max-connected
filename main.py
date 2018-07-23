@@ -13,12 +13,11 @@ def main():
 	my_mat = Matrix.readGrid("testMatrix.txt")
 	print(my_mat)
 
-	# Create another matrix to store connected group identifiers
+	# Create another matrix (of same rank) to store connected group identifiers
 	(y_height, x_width) = my_mat.getRank()
 	print("Creating Grouping Matrix")
 	my_grouping = Matrix.makeZero(y_height,x_width)
 	print(my_grouping)
-
 
 
 
