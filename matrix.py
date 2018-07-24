@@ -30,6 +30,13 @@ class Matrix(object):
 
     def __setitem__(self, idx, item):
         self.rows[idx] = item
+        print("HERE")
+
+
+    def setCell(cls, row, col, value):
+        """ Set the value of matrix[row][col] = value """
+        
+        cls[row][col] = value    
         
     def __str__(self):
         s='\n'.join([' '.join([str(item) for item in row]) for row in self.rows])
@@ -233,7 +240,9 @@ class Matrix(object):
 
         rows = listoflists[:]
         return cls._makeMatrix(rows)
-        
+
+
+
 
 
 
