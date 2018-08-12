@@ -27,16 +27,12 @@ class Matrix(object):
         
     def __getitem__(self, idx):
         return self.rows[idx]
+    
 
     def __setitem__(self, idx, item):
+        print("Set-item")
         self.rows[idx] = item
-        print("HERE")
-
-
-    def setCell(cls, row, col, value):
-        """ Set the value of matrix[row][col] = value """
         
-        cls[row][col] = value    
         
     def __str__(self):
         s='\n'.join([' '.join([str(item) for item in row]) for row in self.rows])
@@ -47,133 +43,55 @@ class Matrix(object):
         rank = str(self.getRank())
         rep="Matrix: \"%s\", rank: \"%s\"" % (s,rank)
         return rep
-    
-    def reset(self):
-        """ Reset the matrix data """
-        self.rows = [[] for x in range(self.m)]
-                     
-    def transpose(self):
-        """ Transpose the matrix. Changes the current matrix """
-        
-        self.m, self.n = self.n, self.m
-        self.rows = [list(item) for item in zip(*self.rows)]
-
-    def getTranspose(self):
-        """ Return a transpose of the matrix without
-        modifying the matrix itself """
-        
-        m, n = self.n, self.m
-        mat = Matrix(m, n)
-        mat.rows =  [list(item) for item in zip(*self.rows)]
-        
-        return mat
 
     def getRank(self):
         return (self.m, self.n)
 
     def __eq__(self, mat):
         """ Test equality """
-
         return (mat.rows == self.rows)
-        
-    def __add__(self, mat):
-        """ Add a matrix to this matrix and
-        return the new matrix. Doesn't modify
-        the current matrix """
-        
-        if self.getRank() != mat.getRank():
-            raise MatrixError, "Trying to add matrixes of varying rank!"
 
-        ret = Matrix(self.m, self.n)
-        
-        for x in range(self.m):
-            row = [sum(item) for item in zip(self.rows[x], mat[x])]
-            ret[x] = row
+    def getValidNeighbours(self,current_row,current_col):
+        print("current_row: " + str(current_row), "Current_col: " + str(current_col))
+        # print(self.getRank())
 
-        return ret
 
-    def __sub__(self, mat):
-        """ Subtract a matrix from this matrix and
-        return the new matrix. Doesn't modify
-        the current matrix """
-        
-        if self.getRank() != mat.getRank():
-            raise MatrixError, "Trying to add matrixes of varying rank!"
+        # dict to store return val
+        valid_neighbours = {"above":False, "right":False, "below":False, "left":False}
 
-        ret = Matrix(self.m, self.n)
-        
-        for x in range(self.m):
-            row = [item[0]-item[1] for item in zip(self.rows[x], mat[x])]
-            ret[x] = row
+        # set upper/lower limits of matrix
+        lower_row = 0
+        lower_col = 0
+        (m_rank,n_rank) = self.getRank()
 
-        return ret
+        upper_row = (m_rank - 1) #offet -1
+        upper_col = (n_rank - 1) #offet -1
 
-    def __mul__(self, mat):
-        """ Multiple a matrix with this matrix and
-        return the new matrix. Doesn't modify
-        the current matrix """
-        
-        matm, matn = mat.getRank()
-        
-        if (self.n != matm):
-            raise MatrixError, "Matrices cannot be multipled!"
-        
-        mat_t = mat.getTranspose()
-        mulmat = Matrix(self.m, matn)
-        
-        for x in range(self.m):
-            for y in range(mat_t.m):
-                mulmat[x][y] = sum([item[0]*item[1] for item in zip(self.rows[x], mat_t[y])])
 
-        return mulmat
+        # If there is a neighbouring tile,
+        # not outside the matrix limits, update dict
 
-    def __iadd__(self, mat):
-        """ Add a matrix to this matrix.
-        This modifies the current matrix """
+        # tile above
+        if(current_row -1 >= lower_row):
+            print("above")
+            valid_neighbours["above"] = True
 
-        # Calls __add__
-        tempmat = self + mat
-        self.rows = tempmat.rows[:]
-        return self
+        # tile right
+        if(current_col +1 <= upper_col):
+            print("right")
+            valid_neighbours["right"] = True
 
-    def __isub__(self, mat):
-        """ Add a matrix to this matrix.
-        This modifies the current matrix """
+        # tile below
+        if(current_row +1 <= upper_row):
+            print("below")
+            valid_neighbours["below"] = True
 
-        # Calls __sub__
-        tempmat = self - mat
-        self.rows = tempmat.rows[:]     
-        return self
+        # tile left
+        if(current_col -1 >= lower_col):
+            print("left")
+            valid_neighbours["left"] = True
 
-    def __imul__(self, mat):
-        """ Add a matrix to this matrix.
-        This modifies the current matrix """
-
-        # Possibly not a proper operation
-        # since this changes the current matrix
-        # rank as well...
-        
-        # Calls __mul__
-        tempmat = self * mat
-        self.rows = tempmat.rows[:]
-        self.m, self.n = tempmat.getRank()
-        return self
-
-    def save(self, filename):
-        open(filename, 'w').write(str(self))
-        
-    @classmethod
-    def _makeMatrix(cls, rows):
-
-        m = len(rows)
-        n = len(rows[0])
-        # Validity check
-        if any([len(row) != n for row in rows[1:]]):
-            raise MatrixError, "inconsistent row length"
-        mat = Matrix(m,n, init=False)
-        mat.rows = rows
-
-        return mat
+        return valid_neighbours
         
     @classmethod
     def makeRandom(cls, m, n, low=0, high=10):
@@ -191,34 +109,7 @@ class Matrix(object):
 
         rows = [[0]*n for x in range(m)]
         return cls.fromList(rows)
-
-    @classmethod
-    def makeId(cls, m):
-        """ Make identity matrix of rank (mxm) """
-
-        rows = [[0]*m for x in range(m)]
-        idx = 0
-        
-        for row in rows:
-            row[idx] = 1
-            idx += 1
-
-        return cls.fromList(rows)
     
-    @classmethod
-    def readStdin(cls):
-        """ Read a matrix from standard input """
-        
-        print 'Enter matrix row by row. Type "q" to quit'
-        rows = []
-        while True:
-            line = sys.stdin.readline().strip()
-            if line=='q': break
-
-            row = [int(x) for x in line.split()]
-            rows.append(row)
-            
-        return cls._makeMatrix(rows)
 
     @classmethod
     def readGrid(cls, fname):
@@ -232,6 +123,19 @@ class Matrix(object):
         return cls._makeMatrix(rows)
 
     @classmethod
+    def _makeMatrix(cls, rows):
+
+        m = len(rows)
+        n = len(rows[0])
+        # Validity check
+        if any([len(row) != n for row in rows[1:]]):
+            raise MatrixError, "inconsistent row length"
+        mat = Matrix(m,n, init=False)
+        mat.rows = rows
+
+        return mat
+
+    @classmethod
     def fromList(cls, listoflists):
         """ Create a matrix by directly passing a list
         of lists """
@@ -240,6 +144,8 @@ class Matrix(object):
 
         rows = listoflists[:]
         return cls._makeMatrix(rows)
+
+    
 
 
 
