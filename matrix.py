@@ -73,22 +73,22 @@ class Matrix(object):
 
         # tile above
         if(current_row -1 >= lower_row):
-            print("above")
+            # print("above")
             valid_neighbours["above"] = True
 
         # tile right
         if(current_col +1 <= upper_col):
-            print("right")
+            # print("right")
             valid_neighbours["right"] = True
 
         # tile below
         if(current_row +1 <= upper_row):
-            print("below")
+            # print("below")
             valid_neighbours["below"] = True
 
         # tile left
         if(current_col -1 >= lower_col):
-            print("left")
+            # print("left")
             valid_neighbours["left"] = True
 
         return valid_neighbours
