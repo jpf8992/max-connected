@@ -6,8 +6,9 @@ Project to determine the maximum number of connected entities for a given grid.
 Sample Process
 
 where;
+
  A is test matrix
- 
+
  B is grouping matrix
 
 
