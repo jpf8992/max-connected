@@ -63,6 +63,13 @@ def main():
 	print(my_grouping)
 
 
+	print("Analysis of Max-Connected tiles")
+	print("===============================\n")
+	# max_connected = 
+	print(my_grouping.getMaxConnected())
+
+
+
 
 	
 

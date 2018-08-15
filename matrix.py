@@ -92,6 +92,14 @@ class Matrix(object):
             valid_neighbours["left"] = True
 
         return valid_neighbours
+
+    def getMaxConnected(self):
+
+        # Concatonte all rows into single list
+        flat_list = [item for sublist in self.rows for item in sublist]
+
+        # [TODO] - doesn't handle draw?? 
+        return max(set(flat_list), key=flat_list.count)
         
     @classmethod
     def makeRandom(cls, m, n, low=0, high=10):
